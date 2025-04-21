@@ -55,7 +55,7 @@ jobs:
           tag=${{ steps.commit.outputs.tag_name }}
 
           # 前のタグを取得（なければ空文字になる）
-          prev_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          prev_tag=$(git describe --tags --abbrev=0 >/dev/null || echo "")
 
           # コミットログを取得
           if [ -n "$prev_tag" ]; then
