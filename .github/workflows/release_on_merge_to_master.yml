@@ -1,9 +1,9 @@
-name: Release on Merge to main
+name: Release on Merge to master
 
 on:
   push:
     branches:
-      - main  # ← mainにマージされたときに発火
+      - master  # ← masterにマージされたときに発火
 
 jobs:
   release:
