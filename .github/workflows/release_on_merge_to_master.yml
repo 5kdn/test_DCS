@@ -65,7 +65,7 @@ jobs:
           fi
 
           # デフォルトメッセージと結合
-          notes="This release was automatically generated on push to master.\n\n$changelog"
+          notes="$changelog"
 
           # リリース作成（ドラフト）
           gh release create "$tag" \
