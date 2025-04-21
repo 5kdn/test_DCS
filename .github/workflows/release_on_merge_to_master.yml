@@ -52,21 +52,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tag=${{ steps.commit.outputs.tag_name }}
-
-          # 前のタグを取得（なければ空文字になる）
-          prev_tag=$(git describe --tags --abbrev=0 >/dev/null || echo "")
-
-          # コミットログを取得
-          if [ -n "$prev_tag" ]; then
-            changelog=$(git log "$prev_tag"..HEAD --pretty=format:"%s")
-          else
-            changelog=$(git log --pretty=format:"- %s")
-          fi
-
           gh release create "$tag" \
             --title "Auto Release $tag" \
-            --notes "# Changelog"$'\n'"$changelog"
 
       - name: Upload ZIPs
         env:
