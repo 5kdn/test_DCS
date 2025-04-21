@@ -1,57 +1,57 @@
-name: Release on Merge to master
+name: Release on Merge or Commit to master
 
 on:
   push:
     branches:
-      - master  # ← masterにマージされたときに発火
+      - master
 
 jobs:
   release:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write  # リリース作成に必要
+      contents: write  # Release の作成に必要
 
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-        - name: Generate tag name from date
-          id: commit
-          run: |
-            echo "tag_name=$(date +v%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+      - name: Generate tag name from date
+        id: commit
+        run: |
+          echo "tag_name=$(date +v%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
 
-        - name: Create ZIP files
-          run: |
-            mkdir -p zips
+      - name: Create ZIP files
+        run: |
+          mkdir -p zips
 
-            for base in DCSWorld/Mods/aircraft DCSWorld/Mods/tech; do
-              if [ -d "$base" ]; then
-                subdirs=$(find "$base" -mindepth 1 -maxdepth 1 -type d)
+          for base in DCSWorld/Mods/aircraft DCSWorld/Mods/tech; do
+            if [ -d "$base" ]; then
+              subdirs=$(find "$base" -mindepth 1 -maxdepth 1 -type d)
 
-                if [ -n "$subdirs" ]; then
-                  echo "Processing directories in $base"
-                  for dir in $subdirs; do
-                    name=$(basename "$dir")
-                    zip -r "zips/${name}.zip" "$dir" \
-                      -x '*.DS_Store' \
-                      -x '*.gitkeep' \
-                      -x '*/Thumbs.db' \
-                      -x '*/desktop.ini'
-                  done
-                else
-                  echo "No valid subdirectories in $base. Skipping."
-                fi
+              if [ -n "$subdirs" ]; then
+                echo "Processing directories in $base"
+                for dir in $subdirs; do
+                  name=$(basename "$dir")
+                  zip -r "zips/${name}.zip" "$dir" \
+                    -x '*.DS_Store' \
+                    -x '*.gitkeep' \
+                    -x '*/Thumbs.db' \
+                    -x '*/desktop.ini'
+                done
               else
-                echo "$base does not exist. Skipping."
+                echo "No valid subdirectories in $base. Skipping."
               fi
-            done
+            else
+              echo "$base does not exist. Skipping."
+            fi
+          done
 
-        - name: Create GitHub Release with ZIPs
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          run: |
-            tag=${{ steps.commit.outputs.tag_name }}
-            gh release create "$tag" zips/*.zip \
-              --title "Auto Release $tag" \
-              --notes "This release was automatically generated on push to main."
+      - name: Create GitHub Release with ZIPs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag=${{ steps.commit.outputs.tag_name }}
+          gh release create "$tag" zips/*.zip \
+            --title "Auto Release $tag" \
+            --notes "This release was automatically generated on push to master."
