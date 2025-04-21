@@ -50,8 +50,8 @@ jobs:
       - name: Collect Guides
         run: |
           mkdir -p extras
-          if compgen -G "Guide/*.pdf" > /dev/null; then
-            cp Guide/*.pdf extras/
+          if compgen -G "Guides/*.pdf" > /dev/null; then
+            cp Guides/*.pdf extras/
           else
             echo "No PDF files found in Guides/"
           fi
