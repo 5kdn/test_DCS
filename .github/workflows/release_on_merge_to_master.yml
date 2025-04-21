@@ -57,7 +57,7 @@ jobs:
             echo "No PDF files found in Guides/"
           fi
 
-      - name: Create GitHub Release (no assets yet)
+      - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
