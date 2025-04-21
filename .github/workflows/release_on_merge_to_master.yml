@@ -64,12 +64,9 @@ jobs:
             changelog=$(git log --pretty=format:"- %s")
           fi
 
-          # デフォルトメッセージと結合
-          notes="$changelog"
-
           gh release create "$tag" \
             --title "Auto Release $tag" \
-            --notes "$notes" \
+            --notes changelog \
 
       - name: Upload ZIPs
         env:
