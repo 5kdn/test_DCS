@@ -14,7 +14,7 @@ jobs:
 
         - name: Create aircraft ZIP files
           run: |
-            if [-d "DCSWorld/Mods/aircraft"]; then
+            if [ -d "DCSWorld/Mods/aircraft" ]; then
               mkdir -p zips
               for dir in DCSWorld/Mods/aircraft/*/; do
                 name=$(basename "$dir")
@@ -24,7 +24,7 @@ jobs:
 
         - name: Create campaign ZIP files
           run: |
-            if [-d "DCSWorld/Mods/campaigns"]; then
+            if [ -d "DCSWorld/Mods/campaigns" ]; then
               mkdir -p zips
               for dir in DCSWorld/Mods/campaigns/*/; do
                 name=$(basename "$dir")
@@ -34,7 +34,7 @@ jobs:
 
         - name: Create tech ZIP files
           run: |
-            if [-d "DCSWorld/Mods/tech"]; then
+            if [ -d "DCSWorld/Mods/tech" ]; then
               mkdir -p zips
               for dir in DCSWorld/Mods/tech/*/; do
                 name=$(basename "$dir")
@@ -44,7 +44,7 @@ jobs:
 
         - name: Create terrains ZIP files
           run: |
-            if [-d "DCSWorld/Mods/terrains"]; then
+            if [ -d "DCSWorld/Mods/terrains" ]; then
               mkdir -p zips
               for dir in DCSWorld/Mods/terrains/*/; do
                 name=$(basename "$dir")
