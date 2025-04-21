@@ -25,25 +25,23 @@ jobs:
         run: |
           mkdir -p zips
 
-          for base in DCSWorld/Mods/aircraft DCSWorld/Mods/campaigns  DCSWorld/Mods/tech  DCSWorld/Mods/terrains; do
+          for base in DCSWorld/Mods/aircraft DCSWorld/Mods/tech; do
             if [ -d "$base" ]; then
               subdirs=$(find "$base" -mindepth 1 -maxdepth 1 -type d)
 
               if [ -n "$subdirs" ]; then
-                echo "Processing directories in $base"
                 for dir in $subdirs; do
                   name=$(basename "$dir")
-                  zip -r "zips/${name}.zip" "$dir" \
-                    -x '*.DS_Store' \
-                    -x '*.gitkeep' \
-                    -x '*/Thumbs.db' \
-                    -x '*/desktop.ini'
+                  (
+                    cd "$(dirname "$dir")"
+                    zip -r "$OLDPWD/zips/${name}.zip" "$(basename "$dir")" \
+                      -x '*.DS_Store' \
+                      -x '*.gitkeep' \
+                      -x '*/Thumbs.db' \
+                      -x '*/desktop.ini'
+                  )
                 done
-              else
-                echo "No valid subdirectories in $base. Skipping."
               fi
-            else
-              echo "$base does not exist. Skipping."
             fi
           done
 
