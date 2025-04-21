@@ -47,13 +47,13 @@ jobs:
             fi
           done
 
-      - name: Collect Chuck's Guides
+      - name: Collect Guides
         run: |
           mkdir -p extras
-          if compgen -G 'Chuck'\''s guide/*.pdf' > /dev/null; then
-            cp 'Chuck'\''s guide/*.pdf' extras/
+          if compgen -G "Guide/*.pdf" > /dev/null; then
+            cp Guide/*.pdf extras/
           else
-            echo "No PDF files found in guides/"
+            echo "No PDF files found in Guides/"
           fi
 
       - name: Create GitHub Release with ZIPs and PDFs
