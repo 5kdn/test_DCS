@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write  # Release の作成に必要
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -48,23 +48,32 @@ jobs:
             fi
           done
 
-      - name: Collect Guides
-        run: |
-          mkdir -p extras
-          if compgen -G "Guides/*.pdf" > /dev/null; then
-            cp Guides/*.pdf extras/
-          else
-            echo "No PDF files found in Guides/"
-          fi
-
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag=${{ steps.commit.outputs.tag_name }}
-          gh release create "$tag" --title "Auto Release $tag" --notes "This release was automatically generated on push to master." --draft
 
-      - name: Upload ZIPs and PDFs
+          # 前のタグを取得（なければ空文字になる）
+          prev_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          # コミットログを取得
+          if [ -n "$prev_tag" ]; then
+            changelog=$(git log "$prev_tag"..HEAD --pretty=format:"- %s")
+          else
+            changelog=$(git log --pretty=format:"- %s")
+          fi
+
+          # デフォルトメッセージと結合
+          notes="This release was automatically generated on push to master.\n\n$changelog"
+
+          # リリース作成（ドラフト）
+          gh release create "$tag" \
+            --title "Auto Release $tag" \
+            --notes "$notes" \
+            --draft
+
+      - name: Upload ZIPs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
