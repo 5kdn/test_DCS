@@ -67,11 +67,9 @@ jobs:
           # デフォルトメッセージと結合
           notes="$changelog"
 
-          # リリース作成（ドラフト）
           gh release create "$tag" \
             --title "Auto Release $tag" \
             --notes "$notes" \
-            --draft
 
       - name: Upload ZIPs
         env:
