@@ -52,8 +52,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "$tag" \
-            --title "Auto Release $tag" \
+          tag=${{ steps.commit.outputs.tag_name }}
+          gh release create "$tag" --title "Auto Release $tag"
 
       - name: Upload ZIPs
         env:
