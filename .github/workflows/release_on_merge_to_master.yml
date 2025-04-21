@@ -56,19 +56,14 @@ jobs:
             echo "No PDF files found in Guides/"
           fi
 
-      - name: Create GitHub Release with ZIPs and PDFs
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          tag=${{ steps.commit.outputs.tag_name }}
+          - name: Create GitHub Release with ZIPs and PDFs
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: |
+            tag=${{ steps.commit.outputs.tag_name }}
 
-          files=""
-          for f in zips/*.zip extras/*.pdf; do
-            if [ -e "$f" ]; then
-              files="$files $f"
-            fi
-          done
+            # ファイルを null 区切りで集める
+            find zips extras -type f -print0 > filelist.txt
 
-          gh release create "$tag" $files \
-            --title "Auto Release $tag" \
-            --notes "This release was automatically generated on push to master."
+            # gh release create にファイルを安全に渡す
+            xargs -0 gh release create "$tag" --title "Auto Release $tag" --notes "This release was automatically generated on push to master." < filelist.txt
