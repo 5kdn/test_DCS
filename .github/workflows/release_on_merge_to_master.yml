@@ -12,39 +12,46 @@ jobs:
     permissions:
       contents: write  # リリース作成に必要
 
-    steps:
-      - name: Get latest commit info
-        id: commit
-        run: |
-          echo "tag_name=$(date +v%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
 
-      - name: Create ZIP files
-        run: |
-          mkdir -p zips
+        - name: Generate tag name from date
+          id: commit
+          run: |
+            echo "tag_name=$(date +v%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
 
-          for base in DCSWorld/Mods/aircraft DCSWorld/Mods/tech; do
-            if [ -d "$base" ]; then
-              subdirs=$(find "$base" -mindepth 1 -maxdepth 1 -type d)
+        - name: Create ZIP files
+          run: |
+            mkdir -p zips
 
-              if [ -n "$subdirs" ]; then
-                echo "Processing directories in $base"
-                for dir in $subdirs; do
-                  name=$(basename "$dir")
-                  zip -r "zips/${name}.zip" "$dir" -x '*.DS_Store' -x '*.gitkeep' -x '*/Thumbs.db' -x '*/desktop.ini'
-                done
+            for base in DCSWorld/Mods/aircraft DCSWorld/Mods/tech; do
+              if [ -d "$base" ]; then
+                subdirs=$(find "$base" -mindepth 1 -maxdepth 1 -type d)
+
+                if [ -n "$subdirs" ]; then
+                  echo "Processing directories in $base"
+                  for dir in $subdirs; do
+                    name=$(basename "$dir")
+                    zip -r "zips/${name}.zip" "$dir" \
+                      -x '*.DS_Store' \
+                      -x '*.gitkeep' \
+                      -x '*/Thumbs.db' \
+                      -x '*/desktop.ini'
+                  done
+                else
+                  echo "No valid subdirectories in $base. Skipping."
+                fi
               else
-                echo "No subdirectories in $base (or only .gitkeep). Skipping."
+                echo "$base does not exist. Skipping."
               fi
-            else
-              echo "$base does not exist. Skipping."
-            fi
-          done
+            done
 
-      - name: Create GitHub Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          tag=${{ steps.commit.outputs.tag_name }}
-          gh release create "$tag" zips/*.zip \
-            --title "Auto Release $tag" \
-            --notes "This release was automatically generated on merge to main."
+        - name: Create GitHub Release with ZIPs
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: |
+            tag=${{ steps.commit.outputs.tag_name }}
+            gh release create "$tag" zips/*.zip \
+              --title "Auto Release $tag" \
+              --notes "This release was automatically generated on push to main."
