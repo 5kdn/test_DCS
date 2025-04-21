@@ -27,14 +27,17 @@ jobs:
 
           for base in DCSWorld/Mods/aircraft DCSWorld/Mods/tech; do
             if [ -d "$base" ]; then
-              subdirs=$(find "$base" -mindepth 1 -maxdepth 1 -type d)
+              category=$(basename "$base")
 
+              subdirs=$(find "$base" -mindepth 1 -maxdepth 1 -type d)
               if [ -n "$subdirs" ]; then
                 for dir in $subdirs; do
-                  name=$(basename "$dir")
+                  modname=$(basename "$dir")
+                  zipname="${category}-${modname}.zip"
+
                   (
                     cd "$(dirname "$dir")"
-                    zip -r "$OLDPWD/zips/${name}.zip" "$(basename "$dir")" \
+                    zip -r "$OLDPWD/zips/${zipname}" "$(basename "$dir")" \
                       -x '*.DS_Store' \
                       -x '*.gitkeep' \
                       -x '*/Thumbs.db' \
