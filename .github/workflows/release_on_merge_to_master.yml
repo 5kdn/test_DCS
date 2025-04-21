@@ -25,7 +25,7 @@ jobs:
         run: |
           mkdir -p zips
 
-          for base in DCSWorld/Mods/aircraft DCSWorld/Mods/tech; do
+          for base in DCSWorld/Mods/aircraft DCSWorld/Mods/campaigns DCSWorld/Mods/tech; do
             if [ -d "$base" ]; then
               category=$(basename "$base")
 
