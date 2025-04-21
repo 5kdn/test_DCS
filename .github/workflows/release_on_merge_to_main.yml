@@ -1,16 +1,27 @@
-name: Release Mods as ZIP
+name: Release on Merge to main
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - main  # ← mainにマージされたときに発火
 
 jobs:
-  zip-and-upload:
+  release:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write  # リリース作成に必要
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Set up GitHub CLI
+        uses: cli/cli-action@v1
+
+      - name: Get latest commit info
+        id: commit
+        run: |
+          echo "tag_name=$(date +v%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
 
       - name: Create ZIP files
         run: |
@@ -34,10 +45,11 @@ jobs:
             fi
           done
 
-
-      - name: Upload ZIPs to release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: zips/*.zip
+      - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag=${{ steps.commit.outputs.tag_name }}
+          gh release create "$tag" zips/*.zip \
+            --title "Auto Release $tag" \
+            --notes "This release was automatically generated on merge to main."
