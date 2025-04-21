@@ -13,7 +13,7 @@ jobs:
       contents: write  # リリース作成に必要
 
     steps:
-      - uses: actions/checkout@v4
+      # - uses: actions/checkout@v4
 
       # - name: Set up GitHub CLI
       #   uses: cli/cli-action@v1
