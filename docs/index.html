@@ -31,41 +31,65 @@
     </style>
 </head>
 <body>
-    <h1>最新のリリースに含まれる ZIP ファイル</h1>
-    <ul id="zip-list">読み込み中...</ul>
+    <h1>Release Downloads</h1>
 
+    <div id="zip-sections"></div>
+
+    <h2>Guides (PDF)</h2>
+    <ul id="pdf-list"></ul>
     <script>
         const owner = '5kdn'
         const repo = 'test_DCS'
         const api = `https://api.github.com/repos/${owner}/${repo}/releases/latest`
 
-        fetch(api)
-        .then(response => response.json())
-        .then(data => {
-            const ul = document.getElementById('zip-list')
-            ul.innerHTML = ''
+        async function fetchReleaseAssets() {
+            const res = await fetch(api)
+            const data = await res.json()
 
-            if (!data.assets || data.assets.length === 0) {
-                ul.innerHTML = '<li>ZIPファイルは見つかりませんでした。</li>'
-                return
-            }
+            const zipSections = document.getElementById('zip-sections')
+            const pdfList = document.getElementById('pdf-list')
 
-            data.assets
-            .filter(asset => asset.name.endsWith('.zip'))
-            .forEach(asset => {
-                const li = document.createElement('li')
-                const a = document.createElement('a')
-                a.href = asset.browser_download_url
-                a.textContent = asset.name
-                a.target = '_blank'
-                li.appendChild(a)
-                ul.appendChild(li)
+            const zipGroups = {}
+
+            data.assets.forEach(asset => {
+                if (asset.name.endsWith('.pdf')) {
+                    const li = document.createElement('li')
+                    const a = document.createElement('a')
+                    a.href = asset.browser_download_url
+                    a.textContent = asset.name
+                    li.appendChild(a)
+                    pdfList.appendChild(li)
+                } else if (asset.name.endsWith('.zip')) {
+                    const match = asset.name.match(/^([^-\s]+)-.+\.zip$/)
+                    if (match) {
+                        const category = match[1]
+                        if (!zipGroups[category]) {
+                            zipGroups[category] = []
+                        }
+                        zipGroups[category].push(asset)
+                    }
+                }
             })
-        })
-        .catch(error => {
-            document.getElementById('zip-list').innerHTML = '<li>エラーが発生しました。</li>'
-            console.error(error)
-        })
-    </script>
+
+            Object.entries(zipGroups).forEach(([category, assets]) => {
+                const h2 = document.createElement('h2')
+                h2.textContent = category.charAt(0).toUpperCase() + category.slice(1)
+                zipSections.appendChild(h2)
+
+                const ul = document.createElement('ul')
+                assets.forEach(asset => {
+                    const li = document.createElement('li')
+                    const a = document.createElement('a')
+                    a.href = asset.browser_download_url
+                    a.textContent = asset.name
+                    li.appendChild(a)
+                    ul.appendChild(li)
+                })
+                zipSections.appendChild(ul)
+            })
+        }
+
+        fetchReleaseAssets()
+        </script>
     </body>
 </html>
