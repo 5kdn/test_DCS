@@ -14,7 +14,7 @@ jobs:
 
         - name: Create aircraft ZIP files
           run: |
-            mkdir zips
+            mkdir -p zips
             for dir in DCSWorld/Mods/aircraft/*/; do
               name=$(basename "$dir")
               zip -r "zips/${name}.zip" "$dir" -x '*.DS_Store' -x '__MACOSX/*' -x '*/Thumbs.db' -x '*/desktop.ini' -x '*.gitkeep'
@@ -22,7 +22,7 @@ jobs:
 
         - name: Create campaign ZIP files
           run: |
-            mkdir zips
+            mkdir -p zips
             for dir in DCSWorld/Mods/campaigns/*/; do
               name=$(basename "$dir")
               zip -r "zips/${name}.zip" "$dir" -x '*.DS_Store' -x '__MACOSX/*' -x '*/Thumbs.db' -x '*/desktop.ini' -x '*.gitkeep'
@@ -30,7 +30,7 @@ jobs:
 
         - name: Create tech ZIP files
           run: |
-            mkdir zips
+            mkdir -p zips
             for dir in DCSWorld/Mods/tech/*/; do
               name=$(basename "$dir")
               zip -r "zips/${name}.zip" "$dir" -x '*.DS_Store' -x '__MACOSX/*' -x '*/Thumbs.db' -x '*/desktop.ini' -x '*.gitkeep'
@@ -38,7 +38,7 @@ jobs:
 
         - name: Create terrains ZIP files
           run: |
-            mkdir zips
+            mkdir -p zips
             for dir in DCSWorld/Mods/terrains/*/; do
               name=$(basename "$dir")
               zip -r "zips/${name}.zip" "$dir" -x '*.DS_Store' -x '__MACOSX/*' -x '*/Thumbs.db' -x '*/desktop.ini' -x '*.gitkeep'
