@@ -35,31 +35,22 @@
 
     <div id="zip-sections"></div>
 
-    <h2>Guides (PDF)</h2>
+    <h2>Guides</h2>
     <ul id="pdf-list"></ul>
+
     <script>
         const owner = '5kdn'
         const repo = 'test_DCS'
-        const api = `https://api.github.com/repos/${owner}/${repo}/releases/latest`
 
         async function fetchReleaseAssets() {
-            const res = await fetch(api)
+            const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`)
             const data = await res.json()
 
             const zipSections = document.getElementById('zip-sections')
-            const pdfList = document.getElementById('pdf-list')
-
             const zipGroups = {}
 
             data.assets.forEach(asset => {
-                if (asset.name.endsWith('.pdf')) {
-                    const li = document.createElement('li')
-                    const a = document.createElement('a')
-                    a.href = asset.browser_download_url
-                    a.textContent = asset.name
-                    li.appendChild(a)
-                    pdfList.appendChild(li)
-                } else if (asset.name.endsWith('.zip')) {
+                if (asset.name.endsWith('.zip')) {
                     const match = asset.name.match(/^([^-\s]+)-.+\.zip$/)
                     if (match) {
                         const category = match[1]
@@ -89,7 +80,26 @@
             })
         }
 
+        async function fetchGuidePDFs() {
+            const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/Guides?ref=master`)
+            const data = await res.json()
+            const pdfList = document.getElementById('pdf-list')
+
+            data
+            .filter(file => file.name.endsWith('.pdf'))
+            .forEach(file => {
+                const li = document.createElement('li')
+                const a = document.createElement('a')
+                a.href = file.download_url
+                a.textContent = file.name
+                a.target = '_blank'
+                li.appendChild(a)
+                pdfList.appendChild(li)
+            })
+        }
+
         fetchReleaseAssets()
-        </script>
-    </body>
+        fetchGuidePDFs()
+    </script>
+</body>
 </html>
