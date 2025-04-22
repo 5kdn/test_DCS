@@ -28,7 +28,7 @@ jobs:
 
           mkdir -p "$output_dir"
 
-          target_dir = "DCSWorld/Mods/aircraft"
+          target_dir="DCSWorld/Mods/aircraft"
 
           for dir in "$target_dir"/*/ ; do
             [ -d "$dir" ] || continue
